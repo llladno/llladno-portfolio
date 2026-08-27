@@ -1,0 +1,7 @@
+.idea/
+node_modules/
+.nuxt/
+.output/
+dist/
+*.log
+assets-src/
