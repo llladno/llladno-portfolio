@@ -1,0 +1,9 @@
+locale: en
+items:
+  - company: Company
+    role: Frontend Developer
+    period: 2023 — present
+    location: Remote
+    bullets:
+      - Built and maintained a web application.
+      - Improved performance and accessibility.

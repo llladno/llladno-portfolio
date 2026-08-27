@@ -1,0 +1,51 @@
+{
+  "name": "portfolio",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "typecheck": "nuxt typecheck",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "intro:frames": "node scripts/build-intro-frames.mjs",
+    "prepare": "lefthook install || true"
+  },
+  "dependencies": {
+    "@nuxt/content": "^3.15.2",
+    "@nuxt/image": "^2.1.0",
+    "@nuxtjs/i18n": "^10.6.0",
+    "@nuxtjs/robots": "^6.2.0",
+    "@nuxtjs/sitemap": "^8.5.0",
+    "@vueuse/core": "^14.4.0",
+    "@vueuse/nuxt": "^14.4.0",
+    "gsap": "^3.15.0",
+    "nuxt": "^4.5.2",
+    "vue": "^3.5.41",
+    "vue-router": "^5.2.0"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@nuxt/eslint": "^1.17.0",
+    "@nuxt/test-utils": "^4.1.0",
+    "@playwright/test": "^1.62.1",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/node": "^26.3.0",
+    "better-sqlite3": "^13.0.3",
+    "eslint": "^10.9.1",
+    "lefthook": "^2.1.10",
+    "prettier": "^3.9.6",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^5.9.3",
+    "vue-tsc": "^3.3.11"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

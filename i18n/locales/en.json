@@ -1,0 +1,30 @@
+{
+  "sections": {
+    "about": "About",
+    "projects": "Projects",
+    "experience": "Experience",
+    "contact": "Contact"
+  },
+  "dock": {
+    "github": "GitHub",
+    "resume": "Résumé"
+  },
+  "intro": {
+    "scrollHint": "Scroll down",
+    "cta": "See my work",
+    "posterAlt": "A laptop showing the portfolio site"
+  },
+  "seo": {
+    "tagline": "portfolio",
+    "description": "Personal portfolio: projects, experience and contacts."
+  },
+  "error": {
+    "notFound": "Page not found",
+    "generic": "Something went wrong",
+    "home": "Go home"
+  },
+  "a11y": {
+    "sections": "Site sections",
+    "dock": "Application dock"
+  }
+}
