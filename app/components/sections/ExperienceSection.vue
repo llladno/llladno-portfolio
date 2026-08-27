@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import { getExperience } from '~/data'
+import type { Locale } from '~/data'
+
 withDefaults(defineProps<{ inWindow?: boolean }>(), { inWindow: false })
 
 const { locale, t } = useI18n()
-const { data } = await useAsyncData(
-  () => `experience-${locale.value}`,
-  () => queryCollection('experience').where('locale', '=', locale.value).first(),
-)
+const jobs = computed(() => getExperience(locale.value as Locale))
 </script>
 
 <template>
@@ -18,7 +18,7 @@ const { data } = await useAsyncData(
       {{ t('sections.experience') }}
     </h2>
     <ol class="mt-6 space-y-6 border-l border-[var(--color-glass-border)] pl-5">
-      <li v-for="(job, i) in data?.items" :key="i">
+      <li v-for="(job, i) in jobs" :key="i">
         <p class="font-semibold">{{ job.role }} · {{ job.company }}</p>
         <p class="text-sm text-[var(--color-muted)]">{{ job.period }}</p>
         <ul class="mt-2 list-disc space-y-1 pl-4 text-sm">

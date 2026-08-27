@@ -33,18 +33,23 @@ Inspiration list: see that spec's Appendix B.
 - **@nuxtjs/i18n v10** — `prefix_except_default`, default `ru`, plus `en`.
   RU at `/`, EN at `/en/*`. UI strings in `i18n/locales/{ru,en}.json`.
   Canonical + hreflang come from `useLocaleHead()` wired in `app/app.vue`.
-- **@nuxt/content v3** — `content.config.ts` defines Zod-checked collections
-  (`about`, `experience`, `projects`). Locale is a required frontmatter field
-  and the folder is `content/<locale>/…`. Broken frontmatter fails the build.
+- **Content = typed TS modules in `app/data/`** (no CMS, no `@nuxt/content`).
+  `app/data/types.ts` holds the shape; `about.ts` / `experience.ts` /
+  `projects.ts` hold the data; `app/data/index.ts` exposes
+  `getAbout(locale)`, `getExperience(locale)`, `getProjects(locale)`,
+  `getProject(locale, slug)`. Sections call these synchronously in `setup`
+  (local data, no `useAsyncData`). Project case bodies are a `CaseBlock[]`
+  (`heading` / `paragraph` / `list` / `image`) rendered by
+  `components/content/CaseBlocks.vue`.
 - **@nuxtjs/sitemap** + **@nuxtjs/robots** — multi-locale sitemap index at
   `/sitemap_index.xml`; robots points at it.
 - **@nuxt/image**, **@vueuse/core**, **gsap** (free since 2025, ScrollTrigger
   included).
 - **Playwright** e2e, **@axe-core/playwright** for a11y smoke.
-- Native deps (`better-sqlite3`, `esbuild`, `lefthook`, `sharp`,
-  `@parcel/watcher`) are allow-listed in `pnpm-workspace.yaml`
-  (`onlyBuiltDependencies` + `allowBuilds`). If pnpm rewrites that file with
-  `set this to true or false` placeholders, replace them with `true`.
+- Native deps (`esbuild`, `lefthook`, `sharp`, `@parcel/watcher`) are
+  allow-listed in `pnpm-workspace.yaml` (`onlyBuiltDependencies` +
+  `allowBuilds`). If pnpm rewrites that file with `set this to true or false`
+  placeholders, replace them with `true`.
 
 ## Architecture
 
@@ -61,7 +66,8 @@ Inspiration list: see that spec's Appendix B.
 - **Sections** (`app/components/sections/*`) render plain semantic markup and
   take an `inWindow` prop. They're always in the page DOM (for SEO); the
   desktop window (`WindowHost` → `OsWindow`) renders a second instance of the
-  active one. Shared `useAsyncData` keys mean data is fetched once.
+  active one. Data comes from `~/data` getters — cheap, synchronous, so a
+  second instance costs nothing.
 - **`useSectionRouter`** is the single owner of "which section/project is
   open". It maps the URL hash (`#about`, `#projects/<slug>`) ⇄
   `activeSection` / `activeProject`. Don't track that state anywhere else.
@@ -94,16 +100,18 @@ Inspiration list: see that spec's Appendix B.
 
 ## Adding a project
 
-1. `content/ru/projects/<slug>.md` **and** `content/en/projects/<slug>.md`
-   with frontmatter: `locale, title, slug, summary, cover?, tags, role?,
-year?, stack, links{repo?,demo?}, order, featured`.
+1. Add an entry to `app/data/projects.ts`: locale-neutral fields (`slug`,
+   `year?`, `tags`, `stack`, `links`, `cover?`, `order`, `featured`) plus
+   `content: { ru: {…}, en: {…} }` where each is
+   `{ title, summary, role?, blocks: CaseBlock[] }`.
 2. Put the cover image under `public/`.
 3. `pnpm test:e2e` — a project window should open at `#projects/<slug>`.
 
 ## Adding a Dock item / section
 
-1. Content file(s) under `content/<locale>/`.
-2. Section component in `app/components/sections/`.
+1. Data + getter in `app/data/` (mirror `about.ts` / its getter in `index.ts`).
+2. Section component in `app/components/sections/`, wired into
+   `app/pages/index.vue` and `app/components/os/WindowHost.vue`.
 3. Entry in `app/app.config.ts` `dock` (and `sections` if it's a real
    section): `{ id, type: 'section' | 'link' | 'file', icon, href? }`.
 4. Strings in both locale JSON files under `sections.*` / `dock.*`.
@@ -116,5 +124,5 @@ CLS ≈ 0. Intro frames lazy-load on viewport entry, never on the critical path.
 ## Not in v1
 
 Multi-window, fake filesystem, separate project routes, contact form / server
-routes, external CMS, blog, `nuxt-og-image` (removed for now — re-add in the
-SEO phase; a static `/og/default.png` is referenced meanwhile).
+routes, CMS / `@nuxt/content`, blog, `nuxt-og-image` (removed for now — re-add
+in the SEO phase; a static `/og/default.png` is referenced meanwhile).

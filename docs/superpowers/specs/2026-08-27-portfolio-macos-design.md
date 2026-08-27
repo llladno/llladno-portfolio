@@ -4,12 +4,26 @@
 - **Статус:** на ревью
 - **Тип:** архитектурный (новый проект)
 
+## Отклонения, принятые при реализации базы (2026-08-27)
+
+1. **Один адаптивный layout** (`app/layouts/default.vue`) вместо двух
+   (`desktop` / `plain`) — чтобы SSR/CSR разметка совпадала. Семантический
+   контент всегда в SSR; macOS-чром поверх за `<ClientOnly>` после `boot()`.
+2. **Контент — TS-модули в `app/data/`**, не `@nuxt/content` (см. §6). Ушёл
+   модуль и нативный `better-sqlite3`.
+3. **`nuxt-og-image` убран** — тянул `@resvg/resvg-js` (натив) и ломал
+   prerender. Вернуть в SEO-фазе; пока статический `/og/default.png` в мете.
+4. **TypeScript запинен на 5.9.3** (`overrides` в `pnpm-workspace.yaml`) —
+   TS 7.0 несовместим с `typescript-eslint`.
+5. Компоненты авто-импортируются **плоскими именами** (`pathPrefix: false`).
+
 ## 1. Цель и объём
 
 Персональное портфолио-сайт с кинематографичным входом и метафорой рабочего
 стола macOS.
 
 **Пользовательский сценарий входа:**
+
 1. Сверху картинка + заголовок (текст обо мне).
 2. При скролле проигрывается scroll-scrubbed анимация: из картинки «вырастает»
    ноутбук.
@@ -19,6 +33,7 @@
 4. Иконки Dock и пункты меню открывают разделы сайта.
 
 **В объёме:**
+
 - One-page сайт: один роут на локаль (`/`, `/en/`), все разделы — секции в DOM.
 - Разделы: About / Projects / Experience / Contact (список может дополниться).
 - Проекты открываются окном/оверлеем на главной (без отдельных роутов).
@@ -29,6 +44,7 @@
 - Упрощённая версия для мобильных и `prefers-reduced-motion`.
 
 **Вне объёма (YAGNI для v1):**
+
 - Мультиоконность, z-order-менеджер, фейковая файловая система.
 - Отдельные страницы-кейсы проектов и OG-картинки под каждый проект.
 - Форма обратной связи / серверные роуты / БД.
@@ -40,11 +56,11 @@
 
 Рассмотрены три подхода к связи «рабочий стол ↔ роутинг/SEO»:
 
-| Подход | Суть | Почему нет |
-|---|---|---|
-| **1. Content-first DOM + OS как прогрессивное улучшение** ⭐ | Семантический контент всегда в DOM; menu bar / Dock / окно накладываются поверх на способных вьюпортах; мобилка — простой стек секций | — выбран |
-| 2. SPA-оболочка «настоящая ОС» | Один роут, разделы — клиентские окна, мультиоконность | Слабое SEO, тяжёлые e2e, мобилка = отдельная сборка |
-| 3. Два раздельных опыта | Кинолендинг + отдельное обычное портфолио | Теряется главная идея рабочего стола |
+| Подход                                                       | Суть                                                                                                                                  | Почему нет                                          |
+| ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| **1. Content-first DOM + OS как прогрессивное улучшение** ⭐ | Семантический контент всегда в DOM; menu bar / Dock / окно накладываются поверх на способных вьюпортах; мобилка — простой стек секций | — выбран                                            |
+| 2. SPA-оболочка «настоящая ОС»                               | Один роут, разделы — клиентские окна, мультиоконность                                                                                 | Слабое SEO, тяжёлые e2e, мобилка = отдельная сборка |
+| 3. Два раздельных опыта                                      | Кинолендинг + отдельное обычное портфолио                                                                                             | Теряется главная идея рабочего стола                |
 
 **Выбран подход 1**, уточнённый до **one-page**: контент разделов — секции
 одной страницы; Dock/меню не навигируют между страницами, а открывают окно
@@ -54,12 +70,14 @@
 ## 3. Стек и рендеринг
 
 ### Стек
+
 - **Nuxt 4** + Vue 3 + TypeScript (strict).
 - **Tailwind CSS v4** через `@tailwindcss/vite`, CSS-first конфигурация
   (`@theme` в `app/assets/css/main.css`), без `tailwind.config.js`.
 - **@nuxtjs/i18n v9** — стратегия `prefix_except_default`,
   `defaultLocale: 'ru'` → RU на `/`, EN на `/en/*`.
-- **@nuxt/content v3** — контент в Markdown + YAML, коллекции с Zod-схемами.
+- **Контент — типизированные TS-модули в `app/data/`** (без `@nuxt/content`;
+  см. §6).
 - **@nuxt/image** — оптимизация изображений (провайдер `ipx`, AVIF/WebP).
 - **GSAP + ScrollTrigger** — scroll-scrubbing и pin (GSAP с 2025 полностью
   бесплатен, включая ScrollTrigger).
@@ -73,6 +91,7 @@
   `engines`.
 
 ### Рендеринг
+
 - **SSG-first:** `nuxt generate`, prerender всех роутов (`crawlLinks: true`) +
   `/sitemap.xml`, `/robots.txt`, `/en/`, локализованная 404.
 - Nitro preset — `static`. Смена на `node-server` / `vercel` / `cloudflare` —
@@ -82,6 +101,7 @@
 - `NUXT_PUBLIC_SITE_URL` — обязателен для абсолютных canonical/hreflang/OG.
 
 ### Бюджеты производительности (проверяются в CI, Lighthouse CI опционально)
+
 - LCP < 2.5s на мобильном профиле.
 - JS при входе < ~180 KB gzip (без кадров интро).
 - Ассеты интро (кадры) — вне критического пути, ленивый прелоад по входу в зону.
@@ -90,6 +110,7 @@
 ## 4. Intro: scroll-scrub («картинка → текст → ноутбук → рабочий стол»)
 
 ### Структура сцены
+
 - `app/pages/index.vue` → `<IntroStage>` + далее секции.
 - `IntroStage` — контейнер высотой ~`350vh`; внутри `position: sticky`
   вьюпорт-слой, который GSAP ScrollTrigger пинит и скрабит по прогрессу `0→1`.
@@ -101,6 +122,7 @@
      проявляются), пин снимается, `booted = true`.
 
 ### Техника воспроизведения — кадровая последовательность на `<canvas>` (выбрано)
+
 - Исходный mp4 нарезается в ~120–180 кадров WebP скриптом
   `scripts/build-intro-frames.mjs` (ffmpeg). Два набора: ~1280px и ~1920px.
 - Прелоад кадров запускается по `IntersectionObserver` (пользователь дошёл до
@@ -115,6 +137,7 @@
   неприемлемо тяжёлыми.
 
 ### Fallback (мобилка / `prefers-reduced-motion` / no-JS)
+
 - Ни скраба, ни пина. `IntroFallback`: статичный герой-образ (последний кадр —
   ноутбук с экраном) + H1 + подзаголовок + кнопка «Смотреть работы» → скролл к
   секциям.
@@ -123,6 +146,7 @@
   поверх.
 
 ### Ассеты
+
 - `public/intro/frames-1280/0001.webp …`, `frames-1920/…`, `public/intro/poster.webp`.
 - Исходный mp4 — в `assets-src/` (в git не коммитим; хранение уточняется —
   Git LFS или внешнее хранилище).
@@ -132,6 +156,7 @@
 ## 5. OS-слой (layouts, menu bar, Dock, окно)
 
 ### Два layout'а
+
 - `app/layouts/desktop.vue` — активен при ширине `≥ lg` И без
   `prefers-reduced-motion`. Содержит `<Wallpaper>`, `<MenuBar>`, `<Dock>`,
   `<WindowHost>` (монтирует `<slot>` страницы внутри `<OsWindow>`).
@@ -144,6 +169,7 @@
   контент идентичны в обоих режимах.
 
 ### Компоненты OS (`app/components/os/`)
+
 - **`MenuBar.vue`** — верхняя стеклянная плашка. Слева: «» + имя + пункты-меню
   (About / Projects / Experience / Contact — дублируют Dock, дают клавиатурную
   навигацию). Справа: `LocaleSwitch` (RU/EN), `ThemeToggle`, `MenuClock`
@@ -165,6 +191,7 @@
   под тему, статичный при reduced-motion.
 
 ### Композаблы (`app/composables/`)
+
 - **`useDesktopMode.ts`** — реактивный boolean (media-query + reduced-motion).
 - **`useIntroState.ts`** — прогресс интро (`0–1`) + флаг `booted`
   (`sessionStorage`: при возврате на `/` в рамках сессии интро проматывается
@@ -177,11 +204,13 @@
 - **`useSeoI18n.ts`** — обёртка `useSeoMeta` + hreflang/canonical/`<html lang>`.
 
 ### Переходы
+
 - Клик по Dock/меню → `useSectionRouter.open(section)` → окно (desktop) или
   `scrollIntoView` к секции (plain) + hash.
 - Красная кнопка / `Escape` → `close()` → hash `#`, домашнее окно (About).
 
 ### Доступность
+
 - Dock — `<nav aria-label>`, Tab/стрелки работают, видимые фокус-кольца.
 - Окно в desktop-режиме — `role="dialog"` + `aria-modal="true"` +
   `aria-labelledby` на заголовок, focus-trap, возврат фокуса на триггер при
@@ -192,30 +221,36 @@
 
 ## 6. Контент-модель, i18n, SEO
 
-### Контент (`@nuxt/content` v3, `content/`)
+### Контент (типизированные TS-модули, `app/data/`)
+
+> Обновлено при реализации: `@nuxt/content` не используется (лишний модуль +
+> нативный `better-sqlite3` + формат папок не понравился). Контент — обычные
+> TS-файлы с типами.
+
 ```
-content/
-  ru/
-    about.md            # frontmatter: title, description, avatar, skills[]
-    experience.yml      # [{ company, role, period, location, bullets[] }]
-    projects/
-      _index.yml         # order[], featured[]
-      <slug>.md          # frontmatter: title, slug, summary, cover, tags[],
-                         #   links{repo,demo}, role, year, stack[]; тело = кейс
-  en/
-    …зеркально
+app/data/
+  types.ts        # Locale, About, Job, Project, ProjectContent, CaseBlock
+  about.ts        # about: Record<Locale, About>
+  experience.ts   # experience: Record<Locale, Job[]>
+  projects.ts     # projects: Project[]  (locale-neutral поля + content: Record<Locale, …>)
+  index.ts        # getAbout / getExperience / getProjects / getProject; dev-проверка уникальности slug
 ```
-- `content.config.ts` — коллекции с Zod-схемами: `about`, `experience`,
-  `projects`. Локаль — поле `locale` в схеме (значение берётся из имени папки
-  `ru/` | `en/` при парсинге `source`), запросы фильтруются по активной локали.
-  Битый frontmatter роняет сборку, а не прод.
+
+- `Project` = `{ slug, year?, tags[], stack[], links{repo?,demo?}, cover?,
+order, featured, content: Record<Locale, ProjectContent> }`.
+  `ProjectContent` = `{ title, summary, role?, blocks: CaseBlock[] }`.
+- `CaseBlock` = `heading | paragraph | list | image` — структурированный кейс,
+  рендерится компонентом `components/content/CaseBlocks.vue`.
+- Типобезопасность — на этапе `nuxt typecheck` / сборки. Никакого рантайм-парсинга:
+  секции зовут `getAbout(locale)` и т.п. синхронно в `setup`.
 - Полное тело каждого кейса рендерится в DOM в секции `#projects` как
-  `<article>`. «Окно проекта» — слой представления над тем же контентом
-  (портал/оверлей), не дублирует данные.
+  `<article>` (для SEO). «Окно проекта» — слой представления над теми же
+  данными.
 - UI-строки — `i18n/locales/ru.json` + `en.json`, вложенные ключи по фичам:
   `intro.*`, `dock.*`, `window.*`, `menu.*`, `seo.*`, `a11y.*`, `common.*`.
 
 ### i18n
+
 - `strategy: 'prefix_except_default'`, `defaultLocale: 'ru'`,
   `locales: [{ code: 'ru', language: 'ru-RU' }, { code: 'en', language: 'en-US' }]`.
 - `detectBrowserLanguage`: `redirectOn: 'root'`, cookie, без редиректа на
@@ -225,6 +260,7 @@ content/
 - `baseUrl` из `NUXT_PUBLIC_SITE_URL`.
 
 ### SEO
+
 - `useSeoI18n` на странице: `title`, `description`, `ogTitle`,
   `ogDescription`, `ogImage`, `twitterCard`. Один набор на локаль.
 - `@nuxtjs/i18n` авто-генерит `<link rel="alternate" hreflang>` + `x-default` +
@@ -240,16 +276,19 @@ content/
 - Локализованная 404 (`app/error.vue`).
 
 ### Роуты (все prerender)
+
 ```
 /           /en/
 /sitemap.xml   /robots.txt   (+ 404)
 ```
+
 Разделы и проекты — через hash: `#about`, `#projects`, `#experience`,
 `#contact`, `#projects/<slug>`.
 
 ## 7. Тесты (Playwright), CI, тулинг
 
 ### Playwright (`tests/e2e/`) — против `nuxt generate` + `nuxi preview`
+
 - `smoke.spec.ts` — `/` и `/en/` → 200, есть H1, 4 секции с `<h2>`, Dock/меню
   видны на desktop-вьюпорте.
 - `i18n.spec.ts` — свитчер RU↔EN меняет `<html lang>`, тексты, URL-префикс;
@@ -274,12 +313,14 @@ content/
   риск). Опционально — визуальные снапшоты Dock/окна с `maxDiffPixelRatio`.
 
 ### CI (`.github/workflows/ci.yml`)
+
 - Джобы: `lint` (eslint + `prettier --check`), `typecheck` (`vue-tsc`),
   `test:e2e` (build → preview → playwright, кеш браузеров), опц. `lighthouse`
   (бюджеты из §3).
 - Валидация контента — часть `nuxt build` (Zod-схемы).
 
 ### Тулинг
+
 - `lefthook`: pre-commit → eslint --fix + prettier на staged; pre-push →
   typecheck.
 - `.nvmrc` / `engines` — Node LTS.
@@ -336,6 +377,7 @@ portfolio/
 ```
 
 ### Ключевые контракты модулей
+
 - **`useSectionRouter`** — единственный владелец состояния «какой раздел/проект
   открыт». Вход: hash, клики Dock/меню/карточек. Выход: `activeSection`,
   `activeProject`, `open()`, `close()`. Зависит от `useRoute`, `useIntroState`.
@@ -424,16 +466,16 @@ menu bar + Dock + стеклянные окна. Контент — секции
 
 ## Команды
 
-| Задача | Команда |
-|---|---|
-| Установка | `pnpm install` |
-| Дев-сервер | `pnpm dev` |
-| Прод-сборка (SSG) | `pnpm generate` |
-| Локальный предпросмотр сборки | `pnpm preview` |
-| Lint | `pnpm lint` (авто-фикс: `pnpm lint:fix`) |
-| Типы | `pnpm typecheck` |
-| E2E | `pnpm test:e2e` (UI: `pnpm test:e2e:ui`) |
-| Кадры интро из mp4 | `pnpm intro:frames` |
+| Задача                        | Команда                                  |
+| ----------------------------- | ---------------------------------------- |
+| Установка                     | `pnpm install`                           |
+| Дев-сервер                    | `pnpm dev`                               |
+| Прод-сборка (SSG)             | `pnpm generate`                          |
+| Локальный предпросмотр сборки | `pnpm preview`                           |
+| Lint                          | `pnpm lint` (авто-фикс: `pnpm lint:fix`) |
+| Типы                          | `pnpm typecheck`                         |
+| E2E                           | `pnpm test:e2e` (UI: `pnpm test:e2e:ui`) |
+| Кадры интро из mp4            | `pnpm intro:frames`                      |
 
 ## Архитектура (кратко)
 
@@ -497,6 +539,7 @@ LCP < 2.5s (мобилка), JS входа < ~180 KB gzip (без кадров �
 ## Приложение B. Референсы (что смотреть)
 
 ### Метафора рабочего стола / macOS в вебе
+
 - **macOS Web — Renato Corali** — `macos.now.sh` (`github.com/Renovamen/playground-macos`).
 - **daedalOS — Dustin Brett** — `dustinbrett.com` — полноценная десктоп-ОС в браузере.
 - **stephband «macOS» clone**, **Vincent Will «Mac OS» portfolio**.
@@ -504,6 +547,7 @@ LCP < 2.5s (мобилка), JS входа < ~180 KB gzip (без кадров �
 - **Poolside.fm** — ретро-ОС интерфейс с настроением.
 
 ### Scroll-scrub / кинематографичный сторителлинг
+
 - **Apple** — страницы AirPods Pro, MacBook Pro, iPhone, «Mac mini» — эталон
   scroll-scrubbed видео и pin-секций.
 - **Lusion** (`lusion.co`), **Active Theory** (`activetheory.net`),
@@ -514,6 +558,7 @@ LCP < 2.5s (мобилка), JS входа < ~180 KB gzip (без кадров �
   «image to canvas sequence».
 
 ### Портфолио-вдохновение
+
 - **Bruno Simon** (`bruno-simon.com`) — 3D-портфолио, планка вау.
 - **Rauno Freiberg** (`rauno.me`), **Paco Coursey** (`paco.me`),
   **Emil Kowalski** (`emilkowal.ski`) — вкус к деталям/интеракциям, glass UI.
@@ -521,6 +566,7 @@ LCP < 2.5s (мобилка), JS входа < ~180 KB gzip (без кадров �
 - **Josh Comeau** (`joshwcomeau.com`) — анимации + доступность.
 
 ### Галереи для поиска ещё
+
 - **Awwwards** (`awwwards.com`), **Godly** (`godly.website`),
   **Httpster** (`httpster.net`), **Land-book** (`land-book.com`),
   **SiteInspire** (`siteinspire.com`), **Minimal Gallery**.
@@ -528,6 +574,7 @@ LCP < 2.5s (мобилка), JS входа < ~180 KB gzip (без кадров �
   «glassmorphism», «portfolio».
 
 ### Техника (референс-чтение для реализации)
+
 - GSAP ScrollTrigger docs — рецепты `pin` + `scrub`.
 - «Animating a canvas with scroll» / Apple AirPods teardown-статьи
   (поиск: «apple airpods scroll animation canvas sequence tutorial»).
@@ -539,6 +586,7 @@ LCP < 2.5s (мобилка), JS входа < ~180 KB gzip (без кадров �
 > `get_workflow_instructions`. Ниже — заготовки промтов.
 
 ### C1. Ключевая картинка героя (до превращения в ноутбук)
+
 ```
 A single hero product shot: a closed matte-space-grey aluminium laptop
 floating on a soft graphite-to-deep-blue gradient background, subtle studio
@@ -548,6 +596,7 @@ cinematic, calm premium mood. No text, no logos.
 ```
 
 ### C2. Кадры трансформации (картинка → раскрывающийся ноутбук)
+
 ```
 Product animation keyframes, same matte-space-grey laptop, seamless loop from
 FULLY CLOSED to SCREEN OPEN AT ~110°, camera slowly pushing in toward the
@@ -555,10 +604,12 @@ screen, identical lighting and background across frames (graphite-to-deep-blue
 gradient), screen emits a soft neutral glow when open, no reflections that
 break continuity, photoreal, consistent framing, 150 frames, 30fps feel.
 ```
+
 (В `generate_video` — короткий клип «closed → open + push-in», затем нарезать
 скриптом в WebP-кадры.)
 
 ### C3. Обои рабочего стола (2 варианта под тему)
+
 ```
 macOS-style abstract wallpaper, smooth flowing gradient ribbons, deep blue /
 violet / teal, soft grain, subtle depth, no subject, no text, 5120x2880,
@@ -566,6 +617,7 @@ elegant and minimal. Variant A: dark. Variant B: light airy pastel.
 ```
 
 ### C4. OG-картинка (шаблон, потом заменит nuxt-og-image)
+
 ```
 Open Graph card, 1200x630, left: large clean sans-serif name and one-line role,
 right: minimal 3/4 render of an open space-grey laptop showing a tiny desktop
@@ -573,6 +625,7 @@ UI, graphite gradient background, generous margins, high contrast, no clutter.
 ```
 
 ### C5. Иконки Dock (единый набор)
+
 ```
 Set of 6 squircle app icons, macOS Big Sur style, consistent 2.5D depth, soft
 inner shadow, vibrant but harmonious palette, each representing: profile/about,
@@ -581,6 +634,7 @@ Flat background, 512x512 each, cohesive family.
 ```
 
 ### C6. Промт-подсказки для дизайна страницы (в Claude/v0/Cursor)
+
 ```
 Build a one-page Nuxt 4 portfolio with a macOS-desktop metaphor.
 - Scroll-scrubbed intro: sticky stage, canvas image sequence, phases

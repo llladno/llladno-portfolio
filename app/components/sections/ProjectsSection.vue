@@ -1,21 +1,13 @@
 <script setup lang="ts">
+import { getProjects } from '~/data'
+import type { Locale } from '~/data'
+
 withDefaults(defineProps<{ inWindow?: boolean }>(), { inWindow: false })
 
 const { locale, t } = useI18n()
 const { activeProject, open } = useSectionRouter()
 
-const { data: projects } = await useAsyncData(
-  () => `projects-${locale.value}`,
-  () =>
-    queryCollection('projects')
-      .where('locale', '=', locale.value)
-      .order('order', 'ASC')
-      .all(),
-)
-
-const current = computed(() =>
-  projects.value?.find((p) => p.slug === activeProject.value),
-)
+const items = computed(() => getProjects(locale.value as Locale))
 </script>
 
 <template>
@@ -28,10 +20,10 @@ const current = computed(() =>
       {{ t('sections.projects') }}
     </h2>
 
-    <!-- Full case bodies always in DOM for SEO. -->
+    <!-- Full case bodies always in the DOM for SEO. -->
     <div class="mt-6 grid gap-4">
       <article
-        v-for="p in projects"
+        v-for="p in items"
         :id="`projects-${p.slug}`"
         :key="p.slug"
         class="glass rounded-xl p-4"
@@ -44,8 +36,8 @@ const current = computed(() =>
           {{ p.title }}
         </button>
         <p class="mt-1 text-sm text-[var(--color-muted)]">{{ p.summary }}</p>
-        <div v-show="!inWindow || current?.slug === p.slug" class="prose mt-3 max-w-none">
-          <ContentRenderer :value="p" />
+        <div v-show="!inWindow || activeProject === p.slug" class="mt-3">
+          <CaseBlocks :blocks="p.blocks" />
         </div>
       </article>
     </div>

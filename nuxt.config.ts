@@ -6,7 +6,6 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
 
   modules: [
-    '@nuxt/content',
     '@nuxt/image',
     '@nuxtjs/i18n',
     '@nuxtjs/sitemap',
@@ -52,14 +51,6 @@ export default defineNuxtConfig({
       cookieKey: 'i18n_locale',
       redirectOn: 'root',
       alwaysRedirect: false,
-    },
-  },
-
-  content: {
-    build: {
-      markdown: {
-        toc: { depth: 3 },
-      },
     },
   },
 

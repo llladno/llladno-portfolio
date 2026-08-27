@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import { getAbout } from '~/data'
+import type { Locale } from '~/data'
+
 withDefaults(defineProps<{ inWindow?: boolean }>(), { inWindow: false })
 
 const { locale, t } = useI18n()
-const { data } = await useAsyncData(
-  () => `about-${locale.value}`,
-  () => queryCollection('about').where('locale', '=', locale.value).first(),
-)
+const data = computed(() => getAbout(locale.value as Locale))
 </script>
 
 <template>
@@ -17,8 +17,8 @@ const { data } = await useAsyncData(
     <h2 v-if="!inWindow" id="about-h" class="text-2xl font-bold">
       {{ t('sections.about') }}
     </h2>
-    <p v-if="data" class="mt-4 text-[var(--color-muted)]">{{ data.description }}</p>
-    <ul v-if="data?.skills?.length" class="mt-4 flex flex-wrap gap-2">
+    <p class="mt-4 text-[var(--color-muted)]">{{ data.description }}</p>
+    <ul v-if="data.skills.length" class="mt-4 flex flex-wrap gap-2">
       <li v-for="s in data.skills" :key="s" class="glass rounded-full px-3 py-1 text-sm">
         {{ s }}
       </li>
