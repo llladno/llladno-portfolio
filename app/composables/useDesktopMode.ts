@@ -8,7 +8,7 @@ import { useMediaQuery } from '@vueuse/core'
  * SSR renders `false` (plain-layout markup) to stay deterministic; the desktop
  * chrome is layered on after hydration without layout shift.
  */
-export function useDesktopMode() {
+export const useDesktopMode = () => {
   const wide = useMediaQuery('(min-width: 1024px)')
   const finePointer = useMediaQuery('(pointer: fine)')
   const reducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)')

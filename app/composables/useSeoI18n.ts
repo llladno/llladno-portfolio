@@ -4,11 +4,11 @@
  * hreflang / canonical are emitted automatically by @nuxtjs/i18n (needs
  * `site.url`).
  */
-export function useSeoI18n(input: {
+export const useSeoI18n = (input: {
   title: string
   description: string
   image?: string
-}) {
+}) => {
   const { locale } = useI18n()
 
   useHead({

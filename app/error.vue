@@ -4,7 +4,7 @@ import type { NuxtError } from '#app'
 defineProps<{ error: NuxtError }>()
 const { t } = useI18n()
 
-function goHome() {
+const goHome = () => {
   clearError({ redirect: '/' })
 }
 </script>

@@ -14,23 +14,7 @@ const canvas = ref<HTMLCanvasElement | null>(null)
 const images = ref<HTMLImageElement[]>([])
 const ready = ref(false)
 
-function preload() {
-  let loaded = 0
-  images.value = props.frames.map((src) => {
-    const img = new Image()
-    img.src = src
-    img.onload = () => {
-      loaded += 1
-      if (loaded >= props.frames.length) {
-        ready.value = true
-        draw()
-      }
-    }
-    return img
-  })
-}
-
-function draw() {
+const draw = () => {
   const el = canvas.value
   if (!el || !ready.value || images.value.length === 0) return
   const ctx = el.getContext('2d')
@@ -46,6 +30,22 @@ function draw() {
   el.height = el.clientHeight * dpr
   ctx.clearRect(0, 0, el.width, el.height)
   ctx.drawImage(img, 0, 0, el.width, el.height)
+}
+
+const preload = () => {
+  let loaded = 0
+  images.value = props.frames.map((src) => {
+    const img = new Image()
+    img.src = src
+    img.onload = () => {
+      loaded += 1
+      if (loaded >= props.frames.length) {
+        ready.value = true
+        draw()
+      }
+    }
+    return img
+  })
 }
 
 watch(

@@ -12,7 +12,7 @@ const { x, y, style } = useDraggable(handle, {
   preventDefault: true,
 })
 
-function onKey(e: KeyboardEvent) {
+const onKey = (e: KeyboardEvent) => {
   if (e.key === 'Escape') emit('close')
 }
 onMounted(() => window.addEventListener('keydown', onKey))

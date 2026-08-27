@@ -8,15 +8,15 @@ import { useSessionStorage } from '@vueuse/core'
  * - `booted` flips true once the intro completes (or is skipped). Persisted for
  *   the session so returning to `/` doesn't replay the cinematic.
  */
-export function useIntroState() {
+export const useIntroState = () => {
   const progress = useState('intro:progress', () => 0)
   const booted = useSessionStorage('intro:booted', false)
 
-  function setProgress(value: number) {
+  const setProgress = (value: number) => {
     progress.value = Math.min(1, Math.max(0, value))
   }
 
-  function boot() {
+  const boot = () => {
     booted.value = true
     progress.value = 1
   }

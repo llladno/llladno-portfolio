@@ -16,7 +16,7 @@ interface OpenTarget {
  *
  * Hash format: `#about`, `#projects`, `#projects/<slug>`.
  */
-export function useSectionRouter() {
+export const useSectionRouter = () => {
   const route = useRoute()
   const router = useRouter()
   const appConfig = useAppConfig()
@@ -25,7 +25,7 @@ export function useSectionRouter() {
   const activeSection = ref<SectionId | null>(null)
   const activeProject = ref<string | null>(null)
 
-  function parseHash(hash: string): OpenTarget | null {
+  const parseHash = (hash: string): OpenTarget | null => {
     const clean = hash.replace(/^#/, '')
     if (!clean) return null
     const [section, project] = clean.split('/') as [string, string | undefined]
@@ -33,18 +33,18 @@ export function useSectionRouter() {
     return { section: section as SectionId, project }
   }
 
-  function sync() {
+  const sync = () => {
     const parsed = parseHash(route.hash)
     activeSection.value = parsed?.section ?? null
     activeProject.value = parsed?.project ?? null
   }
 
-  function open(section: SectionId, project?: string) {
+  const open = (section: SectionId, project?: string) => {
     const hash = project ? `#${section}/${project}` : `#${section}`
     router.replace({ path: route.path, hash })
   }
 
-  function close() {
+  const close = () => {
     router.replace({ path: route.path, hash: '' })
   }
 

@@ -31,7 +31,7 @@ useIntersectionObserver(root, ([entry]) => {
   inView.value = entry?.isIntersecting ?? false
 })
 
-function onScroll() {
+const onScroll = () => {
   const el = root.value
   if (!el) return
   const rect = el.getBoundingClientRect()

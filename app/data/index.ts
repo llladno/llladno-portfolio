@@ -14,21 +14,15 @@ if (import.meta.dev) {
   }
 }
 
-export function getAbout(locale: Locale) {
-  return about[locale]
-}
+export const getAbout = (locale: Locale) => about[locale]
 
-export function getExperience(locale: Locale) {
-  return experience[locale]
-}
+export const getExperience = (locale: Locale) => experience[locale]
 
 /** Projects sorted by `order`, with the active locale's text flattened in. */
-export function getProjects(locale: Locale) {
-  return [...projects]
+export const getProjects = (locale: Locale) =>
+  [...projects]
     .sort((a, b) => a.order - b.order)
     .map((p) => ({ ...p, ...p.content[locale] }))
-}
 
-export function getProject(locale: Locale, slug: string) {
-  return getProjects(locale).find((p) => p.slug === slug) ?? null
-}
+export const getProject = (locale: Locale, slug: string) =>
+  getProjects(locale).find((p) => p.slug === slug) ?? null

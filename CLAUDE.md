@@ -96,6 +96,8 @@ Inspiration list: see that spec's Appendix B.
 - Every new UI string goes into **both** `ru.json` and `en.json`.
 - Components are auto-imported with **flat names** (`pathPrefix: false`):
   `app/components/os/MenuBar.vue` → `<MenuBar>`.
+- **Arrow functions only** — no `function` declarations or expressions
+  (`func-style: expression` + `prefer-arrow-callback`, enforced by ESLint).
 - TDD: add/adjust an `tests/e2e/*.spec.ts` with the feature.
 
 ## Adding a project

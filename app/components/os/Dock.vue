@@ -11,7 +11,7 @@ type DockEntry = {
 
 const items = appConfig.dock as DockEntry[]
 
-function labelFor(item: DockEntry) {
+const labelFor = (item: DockEntry) => {
   if (item.type === 'section') return t(`sections.${item.id}`)
   return t(`dock.${item.id}`)
 }
