@@ -17,6 +17,20 @@ logs
 .DS_Store
 .fleet
 .idea
+.vscode
+Thumbs.db
+
+# Tooling caches
+.eslintcache
+*.tsbuildinfo
+
+# Claude Code — keep the shared skill, ignore personal settings
+.claude/settings.local.json
+
+# Deploy platform dirs (hosting not chosen yet)
+.vercel
+.netlify
+.wrangler
 
 # Source assets not tracked in git (raw intro mp4, design files)
 assets-src
