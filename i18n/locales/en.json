@@ -9,6 +9,9 @@
     "github": "GitHub",
     "resume": "Résumé"
   },
+  "window": {
+    "close": "Close window"
+  },
   "intro": {
     "scrollHint": "Scroll down",
     "cta": "See my work",

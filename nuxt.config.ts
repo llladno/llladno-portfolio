@@ -16,8 +16,10 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/main.css'],
 
-  // Flat component names (no directory prefix): <MenuBar>, <AboutSection>, ...
-  components: [{ path: '~/components', pathPrefix: false }],
+  // FSD: no component auto-import — every component is imported explicitly
+  // through its slice's `index.ts` public API. (Nuxt/Vue framework
+  // auto-imports like `ref`, `useRoute`, `useI18n` stay on.)
+  components: [],
 
   vite: {
     plugins: [tailwindcss()],

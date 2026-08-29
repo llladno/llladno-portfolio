@@ -9,6 +9,9 @@
     "github": "GitHub",
     "resume": "Резюме"
   },
+  "window": {
+    "close": "Закрыть окно"
+  },
   "intro": {
     "scrollHint": "Листайте вниз",
     "cta": "Смотреть работы",

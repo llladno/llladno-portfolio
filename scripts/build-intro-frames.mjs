@@ -22,10 +22,10 @@ if (!existsSync(SRC)) {
   process.exit(1)
 }
 
-for (const w of SIZES) {
-  const dir = `public/intro/frames-${w}`
+for (const widthPx of SIZES) {
+  const dir = `public/intro/frames-${widthPx}`
   mkdirSync(dir, { recursive: true })
-  console.log(`Encoding ${w}px frames -> ${dir}`)
+  console.log(`Encoding ${widthPx}px frames -> ${dir}`)
   execFileSync(
     'ffmpeg',
     [
@@ -33,7 +33,7 @@ for (const w of SIZES) {
       '-i',
       SRC,
       '-vf',
-      `fps=${FPS},scale=${w}:-2`,
+      `fps=${FPS},scale=${widthPx}:-2`,
       '-c:v',
       'libwebp',
       '-quality',

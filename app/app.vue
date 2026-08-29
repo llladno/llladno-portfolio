@@ -25,7 +25,7 @@ useHead({
           appConfig.identity.role.en,
         email: `mailto:${appConfig.identity.email}`,
         url: siteUrl,
-        sameAs: appConfig.socials.map((s) => s.href),
+        sameAs: appConfig.socials.map((social) => social.href),
       }),
     },
   ],

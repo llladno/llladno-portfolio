@@ -15,7 +15,15 @@
    prerender. Вернуть в SEO-фазе; пока статический `/og/default.png` в мете.
 4. **TypeScript запинен на 5.9.3** (`overrides` в `pnpm-workspace.yaml`) —
    TS 7.0 несовместим с `typescript-eslint`.
-5. Компоненты авто-импортируются **плоскими именами** (`pathPrefix: false`).
+5. **Структура — лёгкий FSD** (`app/{shared,entities,features,widgets}` +
+   Nuxt `pages`/`layouts`). Каждый компонент — папка
+   `ui/Name/{Name.vue,types.ts,constants.ts,index.ts}`. Авто-импорт компонентов
+   **выключен** — всё через `index.ts` слайса. Импорты только вниз по слоям
+   (ESLint `no-restricted-imports`).
+6. **Код-стандарты** (ESLint + скилл `.claude/skills/code-standards`):
+   только стрелочные функции, именованные константы вместо магических чисел,
+   читаемые имена (`id-length` ≥ 3), импорты только через `~`, Tailwind
+   theme-утилиты вместо `[var(--…)]`.
 
 ## 1. Цель и объём
 

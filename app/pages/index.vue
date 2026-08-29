@@ -1,4 +1,13 @@
 <script setup lang="ts">
+import { useSeoI18n } from '~/shared/lib'
+import { IntroStage } from '~/widgets/intro-stage'
+import {
+  AboutSection,
+  ProjectsSection,
+  ExperienceSection,
+  ContactSection,
+} from '~/widgets/site-sections'
+
 const { t } = useI18n()
 const appConfig = useAppConfig()
 
