@@ -16,6 +16,13 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/main.css'],
 
+  // No runtime IPX on a static deploy — the Finder thumbnails render client-side
+  // so `ipxStatic` never prerenders their `/_ipx/` variants (→ 404). The few
+  // images we serve (project posters, hero) are pre-sized; ship them as-is.
+  image: {
+    provider: 'none',
+  },
+
   runtimeConfig: {
     public: {
       // Web3Forms access key for the contact form. Set via
