@@ -65,7 +65,11 @@ export default defineNuxtConfig({
   },
 
   // SSG-first: prerender everything, crawl links from the entry routes.
+  // `preset: 'static'` pins the output to `.output/public` — without it the
+  // Cloudflare build env auto-selects `cloudflare-module` (a server Worker)
+  // and its generated wrangler.json overrides ours, breaking `wrangler deploy`.
   nitro: {
+    preset: 'static',
     prerender: {
       crawlLinks: true,
       routes: ['/', '/en/', '/sitemap.xml', '/robots.txt'],
