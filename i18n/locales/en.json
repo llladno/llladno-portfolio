@@ -88,6 +88,7 @@
     "sections": "Sections",
     "dock": "Application dock",
     "desktop": "Desktop",
-    "contextMenu": "Desktop context menu"
+    "contextMenu": "Desktop context menu",
+    "socials": "Social links"
   }
 }

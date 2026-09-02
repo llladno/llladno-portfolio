@@ -9,6 +9,19 @@ test.describe('smoke', () => {
     }
   })
 
+  test('the plain layout has a social-links footer in the prerendered HTML', async ({
+    request,
+  }) => {
+    const html = await (await request.get('/')).text()
+    for (const href of [
+      'https://github.com/llladno',
+      'https://linkedin.com/in/grigoriy-mansurov',
+      'https://t.me/llladnooo',
+    ]) {
+      expect(html).toContain(`href="${href}"`)
+    }
+  })
+
   test('EN home is served under /en/', async ({ page }) => {
     const res = await page.goto('/en/')
     expect(res?.status()).toBeLessThan(400)

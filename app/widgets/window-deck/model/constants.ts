@@ -20,12 +20,13 @@ export const DECK_WINDOW_SCROLL_VH = 88
 export const DECK_DESKTOP_TRAIL = 0.16
 
 /**
- * A window whose focus is at or above this drives its own body scroll (the
- * wheel scrolls its content, not the deck) until the content hits an edge.
+ * A window whose focus is at or above this is the cascade leader — if its
+ * content overflows, the body becomes an independent scroll area (the wheel
+ * scrolls its content, never the deck).
  */
 export const OWNS_SCROLL_FOCUS_THRESHOLD = 0.9
 
-/** Px slack when deciding a scroll container is at its top / bottom edge. */
+/** Px slack when deciding whether a window body's content overflows. */
 export const SCROLL_EDGE_EPSILON_PX = 2
 
 /** Cascade offset between consecutive windows, in px. */

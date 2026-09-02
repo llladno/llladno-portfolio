@@ -6,7 +6,7 @@
  * screen (fills the viewport between menu bar and Dock); it un-zooms when the
  * window loses focus.
  */
-import { useEventListener } from '@vueuse/core'
+import { useResizeObserver } from '@vueuse/core'
 import { TrafficLights } from '~/shared/ui'
 import type { DeckWindowVisual } from '~/widgets/window-deck/model/types'
 import { SCROLL_EDGE_EPSILON_PX } from '~/widgets/window-deck/model/constants'
@@ -26,9 +26,10 @@ const props = defineProps<{
    */
   forced?: boolean
   /**
-   * This window is the scroll-cascade leader: its body owns the wheel for its
-   * own content, handing the wheel back to the deck only at the content edge.
-   * (`forced` / `zoomed` windows trap the wheel entirely — that is separate.)
+   * This window is the scroll-cascade leader. When its content overflows, the
+   * body becomes an independent scroll area — the wheel over it scrolls only
+   * the content and never chains to the page (two separate scrolls). To advance
+   * the deck past it, scroll on the title bar or the wallpaper around it.
    */
   ownsScroll?: boolean
   /** A wider frame — for windows whose content is a side-by-side layout. */
@@ -43,32 +44,28 @@ const INTERACTIVE_OPACITY = 0.55
 
 const zoomed = ref(false)
 const bodyEl = ref<HTMLElement | null>(null)
-const nuxtApp = useNuxtApp()
+const bodyOverflows = ref(false)
 
-type LenisLike = { actualScroll: number }
+const measureOverflow = () => {
+  const body = bodyEl.value
+  bodyOverflows.value = body
+    ? body.scrollHeight - body.clientHeight > SCROLL_EDGE_EPSILON_PX
+    : false
+}
+useResizeObserver(bodyEl, measureOverflow)
 
 /*
- * Cascade leader: scroll the content; at the top / bottom edge, nudge the page
- * so the deck advances. `forced` / `zoomed` windows keep trapping the wheel
- * fully (data-lenis-prevent + overscroll-contain in the template).
+ * The body becomes an independent, self-contained scroll area (Lenis lets go of
+ * the wheel, `overscroll-contain` stops the chain to the page) when:
+ *  - the window was opened directly (forced) or zoomed — it owns the wheel while
+ *    it's up, or
+ *  - it's the cascade leader AND its content actually overflows.
+ * A leader whose content fits keeps passing the wheel to the deck so you can
+ * still scroll on through it.
  */
-const onBodyWheel = (event: WheelEvent) => {
-  const body = bodyEl.value
-  if (!body || props.forced || zoomed.value || !props.ownsScroll) return
-
-  const atTop = body.scrollTop <= SCROLL_EDGE_EPSILON_PX
-  const atBottom =
-    body.scrollTop + body.clientHeight >= body.scrollHeight - SCROLL_EDGE_EPSILON_PX
-  const goingDown = event.deltaY > 0
-  const roomToScroll = (goingDown && !atBottom) || (!goingDown && !atTop)
-  if (roomToScroll) return // browser scrolls the body natively (Lenis ignores it)
-
-  const lenis = nuxtApp.$lenis as LenisLike | undefined
-  const from = lenis?.actualScroll ?? window.scrollY
-  window.scrollTo({ top: from + event.deltaY })
-}
-
-useEventListener(bodyEl, 'wheel', onBodyWheel, { passive: false })
+const bodyScrollIsolated = computed(
+  () => props.forced || zoomed.value || (!!props.ownsScroll && bodyOverflows.value),
+)
 
 // Losing focus drops the zoom, so a window never reopens full screen.
 watch(
@@ -135,14 +132,14 @@ const style = computed(() => {
       <span class="w-[46px] shrink-0" aria-hidden="true" />
     </div>
 
-    <!-- When forced open, the body scrolls its own content: data-lenis-prevent
-         hands the wheel back from Lenis, overscroll-contain stops it chaining to
-         the page. In the scroll-driven cascade the wheel belongs to the deck. -->
+    <!-- An isolated body scrolls its own content only: data-lenis-prevent hands
+         the wheel back from Lenis, overscroll-contain stops the chain to the
+         page. Otherwise the wheel belongs to the deck. -->
     <div
       ref="bodyEl"
       class="deck-window__body grow overflow-y-auto px-7 py-7"
-      :class="forced || zoomed || ownsScroll ? 'overscroll-contain' : ''"
-      :data-lenis-prevent="forced || zoomed || ownsScroll || null"
+      :class="bodyScrollIsolated ? 'overscroll-contain' : ''"
+      :data-lenis-prevent="bodyScrollIsolated || null"
     >
       <slot />
     </div>

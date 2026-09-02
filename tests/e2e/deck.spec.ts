@@ -68,7 +68,7 @@ test.describe('window deck', () => {
     expect(new URL(page.url()).hash).toBe('')
   })
 
-  test('a scroll-focused window scrolls its own content before the deck advances', async ({
+  test('a focused window with overflow scrolls independently — the page never chains', async ({
     page,
   }) => {
     await page.goto('/')
@@ -82,11 +82,22 @@ test.describe('window deck', () => {
     const overflow = await body.evaluate((node) => node.scrollHeight - node.clientHeight)
     test.skip(overflow < 60, 'experience window content fits — nothing to nested-scroll')
 
+    const pageYBefore = await page.evaluate(() => window.scrollY)
+
+    // Wheel well past the content's end.
     await body.hover()
-    await page.mouse.wheel(0, 200)
+    for (let step = 0; step < 12; step += 1) {
+      await page.mouse.wheel(0, 300)
+      await page.waitForTimeout(30)
+    }
     await page.waitForTimeout(400)
 
-    expect(await body.evaluate((node) => node.scrollTop)).toBeGreaterThan(0)
+    // Content scrolled to its bottom; the page did NOT move; the window is
+    // still the focused one (the deck never advanced).
+    expect(await body.evaluate((node) => node.scrollTop)).toBeGreaterThan(overflow - 40)
+    expect(
+      Math.abs((await page.evaluate(() => window.scrollY)) - pageYBefore),
+    ).toBeLessThan(8)
     expect(await windowOpacity(page, 1)).toBeGreaterThan(0.75)
   })
 

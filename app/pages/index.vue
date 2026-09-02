@@ -2,6 +2,7 @@
 import { useDesktopMode, useIdentity, useSeoI18n } from '~/shared/lib'
 import { IntroStage } from '~/widgets/intro-stage'
 import { WindowDeck } from '~/widgets/window-deck'
+import { SocialLinks } from '~/shared/ui'
 import {
   AboutSection,
   ContactSection,
@@ -36,11 +37,16 @@ const useDeck = computed(() => isMounted.value && isDesktop.value)
 
     <WindowDeck v-if="useDeck" :sections="SECTION_REGISTRY" />
 
-    <div v-else class="mx-auto max-w-2xl divide-y divide-line pb-32">
-      <AboutSection />
-      <ExperienceSection />
-      <ProjectsSection />
-      <ContactSection />
+    <div v-else class="mx-auto max-w-2xl pb-16">
+      <div class="divide-y divide-line">
+        <AboutSection />
+        <ExperienceSection />
+        <ProjectsSection />
+        <ContactSection />
+      </div>
+      <footer class="border-t border-line px-7 pt-10 sm:px-10">
+        <SocialLinks />
+      </footer>
     </div>
   </div>
 </template>
