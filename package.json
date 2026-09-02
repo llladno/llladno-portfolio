@@ -16,6 +16,7 @@
     "test:e2e:ui": "playwright test --ui",
     "record:previews": "node scripts/record-project-previews.mjs",
     "convert:previews": "node scripts/convert-project-movs.mjs",
+    "gen:favicons": "node scripts/gen-favicons.mjs",
     "deploy": "nuxt generate && wrangler deploy",
     "deploy:preview": "nuxt generate && wrangler versions upload",
     "prepare": "lefthook install || true"

@@ -257,6 +257,14 @@ Alternatively, drop a hand-recorded `public/projects/<slug>.mov` and run
 sync with the encoded output (the record path is 1280×800, a 16:10 ReplayKit
 capture ends up 1280×668).
 
+### Favicon
+
+`public/favicon.svg` is the source — an orange rounded-square "G" monogram
+(Signal brand). `pnpm gen:favicons` (`scripts/gen-favicons.mjs`, headless
+Chromium) rasterises it to `favicon.ico` (32px PNG-in-ICO), `apple-touch-icon.png`
+(180) and `favicon-192x192.png`; all four are linked in `nuxt.config.ts`
+`app.head` and committed. Re-run after editing the SVG.
+
 ## Adding a section (folder + deck window)
 
 1. New entity slice (or reuse one) with `model/data.ts` getter + `ui/` card.
