@@ -27,6 +27,8 @@ export default defineConfig({
       // server is still served locally.
       NUXT_PUBLIC_SITE_URL:
         process.env.NUXT_PUBLIC_SITE_URL ?? 'https://portfolio.example',
+      // Enables the contact form's submit button; the spec mocks the network.
+      NUXT_PUBLIC_WEB3FORMS_KEY: process.env.NUXT_PUBLIC_WEB3FORMS_KEY ?? 'test-key-e2e',
     },
   },
   projects: [

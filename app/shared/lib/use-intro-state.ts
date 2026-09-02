@@ -1,21 +1,20 @@
-import { useSessionStorage } from '@vueuse/core'
 import { clamp } from '~/shared/lib/clamp'
 
 const PROGRESS_MIN = 0
 const PROGRESS_MAX = 1
-const BOOTED_STORAGE_KEY = 'intro:booted'
 
 /**
- * Shared state for the scroll-scrub intro.
+ * Shared state for the scroll-driven intro. Deliberately NOT persisted — every
+ * reload replays from the first slide, and scrolling back up restores it.
  *
- * - `progress` (0–1) is written by the intro stage and read by the scrub canvas
- *   and wallpaper.
- * - `booted` flips true once the intro completes (or is skipped). Persisted for
- *   the session so returning to `/` doesn't replay the cinematic.
+ * - `progress` (0–1) — written by IntroStage, read by <Wallpaper>.
+ * - `booted` — whether the macOS chrome shows. The cinematic path toggles it
+ *   from scroll progress (with hysteresis); the fallback path forces it via
+ *   `boot()`.
  */
 export const useIntroState = () => {
   const progress = useState('intro:progress', () => PROGRESS_MIN)
-  const booted = useSessionStorage(BOOTED_STORAGE_KEY, false)
+  const booted = useState('intro:booted', () => false)
 
   const setProgress = (value: number) => {
     progress.value = clamp(value, PROGRESS_MIN, PROGRESS_MAX)

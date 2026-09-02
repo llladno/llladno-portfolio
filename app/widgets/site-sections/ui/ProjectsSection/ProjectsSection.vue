@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import type { Locale } from '~/shared/config/i18n'
+import { SectionShell } from '~/shared/ui'
 import { ProjectCard, getProjects } from '~/entities/project'
 import { useSectionRouter } from '~/features/section-router'
+import { ProjectFinder } from '~/widgets/projects-finder'
 
 const props = withDefaults(defineProps<{ inWindow?: boolean }>(), {
   inWindow: false,
@@ -17,17 +19,11 @@ const isExpanded = (slug: string): boolean =>
 </script>
 
 <template>
-  <section
-    id="projects"
-    :aria-labelledby="inWindow ? undefined : 'projects-heading'"
-    class="mx-auto max-w-3xl scroll-mt-16 px-6 py-16"
-  >
-    <h2 v-if="!inWindow" id="projects-heading" class="mb-6 text-2xl font-bold">
-      {{ t('sections.projects') }}
-    </h2>
-
-    <!-- Full case bodies stay in the DOM for SEO; the card collapses them. -->
-    <div class="grid gap-4">
+  <SectionShell id="projects" :title="t('sections.projects')" :in-window="inWindow">
+    <!-- Inside a window: the Finder. Otherwise (SSR/SEO baseline, mobile,
+         reduced motion) full case bodies stay in the DOM as a plain list. -->
+    <ProjectFinder v-if="inWindow" />
+    <div v-else class="grid gap-3">
       <ProjectCard
         v-for="project in projects"
         :key="project.slug"
@@ -36,5 +32,5 @@ const isExpanded = (slug: string): boolean =>
         @open="open('projects', project.slug)"
       />
     </div>
-  </section>
+  </SectionShell>
 </template>

@@ -7,35 +7,42 @@ interface SocialLink {
 }
 
 interface Identity {
-  name: string
+  name: { ru: string; en: string }
   role: { ru: string; en: string }
   email: string
 }
 
 /**
  * Runtime-editable config: identity, social links, and the Dock layout.
- * Dock items of kind `section` open a window / scroll to that section;
- * `link` is an external anchor; `file` points at a public asset.
+ * Dock items are external links / files now — section navigation lives on the
+ * desktop (folders) and in the scroll deck.
  */
 export default defineAppConfig({
   identity: {
-    name: 'Your Name',
-    role: { ru: 'Разработчик', en: 'Developer' },
-    email: 'you@example.com',
+    name: { ru: 'Григорий Мансуров', en: 'Grigory Mansurov' },
+    role: { ru: 'Frontend-разработчик', en: 'Frontend Developer' },
+    email: 'man30968@gmail.com',
   } satisfies Identity,
 
   socials: [
-    { id: 'github', label: 'GitHub', href: 'https://github.com/' },
-    { id: 'linkedin', label: 'LinkedIn', href: 'https://linkedin.com/in/' },
-    { id: 'telegram', label: 'Telegram', href: 'https://t.me/' },
+    { id: 'github', label: 'GitHub', href: 'https://github.com/llladno' },
+    {
+      id: 'linkedin',
+      label: 'LinkedIn',
+      href: 'https://linkedin.com/in/grigoriy-mansurov',
+    },
+    { id: 'telegram', label: 'Telegram', href: 'https://t.me/llladnooo' },
   ] satisfies SocialLink[],
 
   dock: [
-    { id: 'about', kind: 'section', icon: 'about' },
-    { id: 'projects', kind: 'section', icon: 'projects' },
-    { id: 'experience', kind: 'section', icon: 'experience' },
-    { id: 'contact', kind: 'section', icon: 'contact' },
-    { id: 'github', kind: 'link', icon: 'github', href: 'https://github.com/' },
+    { id: 'github', kind: 'link', icon: 'github', href: 'https://github.com/llladno' },
+    {
+      id: 'linkedin',
+      kind: 'link',
+      icon: 'linkedin',
+      href: 'https://linkedin.com/in/grigoriy-mansurov',
+    },
+    { id: 'telegram', kind: 'link', icon: 'telegram', href: 'https://t.me/llladnooo' },
     { id: 'resume', kind: 'file', icon: 'resume', href: '/resume/en.pdf' },
   ] satisfies DockItemConfig[],
 })

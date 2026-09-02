@@ -1,80 +1,181 @@
 <script setup lang="ts">
 /*
- * Owns the intro scroll choreography.
+ * Owns the intro "boot".
  *
- * Desktop + motion allowed: a tall stage with a pinned inner layer; scroll
- * progress (0–1) drives the scrub canvas and, past BOOT_PROGRESS_THRESHOLD,
- * boots the desktop. Otherwise: render the fallback and boot immediately.
+ * Slide 1 is a plain landing — a full-bleed hero photo behind a scrim, with
+ * the name over it. On a capable viewport (first visit) the inner layer is
+ * pinned with `position: sticky`; a scroll listener derives `progress` (0–1)
+ * and GSAP applies each layer's state:
  *
- * NOTE (base architecture): progress is derived from a scroll listener +
- * getBoundingClientRect. The dedicated intro phase swaps this for GSAP
- * ScrollTrigger (pin + scrub) per the spec.
+ *   photo parallaxes up (drift + a touch of scale, never a zoom) and
+ *   dissolves, revealing the OS <Wallpaper> that already sits behind everything
+ *   → past BOOT_PROGRESS_THRESHOLD the macOS chrome assembles.
+ *   Scrolling back up past BOOT_UNBOOT_THRESHOLD restores the landing.
+ *
+ * Otherwise (reduced motion, small viewport, return visit): render
+ * <IntroFallback> and boot immediately.
+ *
+ * SSR renders <IntroFallback> (it carries the page <h1>); the cinematic stage
+ * is gated behind `isMounted` so the client's first paint matches the server.
  */
-import { useEventListener, useIntersectionObserver } from '@vueuse/core'
+import type { gsap as Gsap } from 'gsap'
+import { useEventListener } from '@vueuse/core'
 import { clamp, useDesktopMode, useIntroState } from '~/shared/lib'
 import {
   BOOT_PROGRESS_THRESHOLD,
+  BOOT_UNBOOT_THRESHOLD,
   INTRO_STAGE_HEIGHT_VH,
-  introFrameSources,
+  PARALLAX_SCALE_END,
+  PARALLAX_SCALE_START,
+  PARALLAX_SHIFT_PERCENT,
+  TL_PHOTO_FADE_END,
+  TL_PHOTO_FADE_START,
 } from '~/widgets/intro-stage/model/constants'
-import { ScrubCanvas } from '~/widgets/intro-stage/ui/ScrubCanvas'
+import { HeroLayer } from '~/widgets/intro-stage/ui/HeroLayer'
 import { IntroCopy } from '~/widgets/intro-stage/ui/IntroCopy'
+import { IntroStats } from '~/widgets/intro-stage/ui/IntroStats'
 import { IntroFallback } from '~/widgets/intro-stage/ui/IntroFallback'
 
-const frameSources = introFrameSources()
+const PROGRESS_MIN = 0
+const PROGRESS_MAX = 1
 
 const { isDesktop, prefersReducedMotion } = useDesktopMode()
 const { progress, booted, setProgress, boot } = useIntroState()
 
+const isMounted = ref(false)
+const startedBooted = booted.value
+
 const isCinematic = computed(
-  () => isDesktop.value && !prefersReducedMotion.value && !booted.value,
+  () =>
+    isMounted.value && isDesktop.value && !prefersReducedMotion.value && !startedBooted,
 )
 
 const stageEl = ref<HTMLElement | null>(null)
-const isInViewport = ref(false)
+const pinEl = ref<HTMLElement | null>(null)
+const heroEl = ref<HTMLElement | null>(null)
 
-useIntersectionObserver(stageEl, ([entry]) => {
-  isInViewport.value = entry?.isIntersecting ?? false
-})
+const stageHeight = `${INTRO_STAGE_HEIGHT_VH}vh`
 
-const updateProgressFromScroll = () => {
+let gsap: typeof Gsap | null = null
+let frameHandle = 0
+
+const lerp = (start: number, end: number, amount: number): number =>
+  start + (end - start) * amount
+
+/** Map overall progress onto a sub-range, clamped to 0–1. */
+const subProgress = (value: number, rangeStart: number, rangeEnd: number): number =>
+  clamp((value - rangeStart) / (rangeEnd - rangeStart), PROGRESS_MIN, PROGRESS_MAX)
+
+const applyChoreography = (value: number) => {
+  if (!gsap || !heroEl.value) return
+
+  const faded = subProgress(value, TL_PHOTO_FADE_START, TL_PHOTO_FADE_END)
+  gsap.set(heroEl.value, {
+    yPercent: -PARALLAX_SHIFT_PERCENT * value,
+    scale: lerp(PARALLAX_SCALE_START, PARALLAX_SCALE_END, value),
+    autoAlpha: 1 - faded,
+  })
+}
+
+const readProgress = () => {
   const stage = stageEl.value
   if (!stage) return
 
   const bounds = stage.getBoundingClientRect()
   const scrollableDistance = bounds.height - window.innerHeight
-  const scrolledPast = clamp(-bounds.top, 0, scrollableDistance)
-  const scrollProgress = scrollableDistance > 0 ? scrolledPast / scrollableDistance : 0
+  const scrolledPast = clamp(-bounds.top, PROGRESS_MIN, scrollableDistance)
+  const nextProgress =
+    scrollableDistance > 0 ? scrolledPast / scrollableDistance : PROGRESS_MIN
 
-  setProgress(scrollProgress)
-  if (scrollProgress >= BOOT_PROGRESS_THRESHOLD && !booted.value) boot()
+  setProgress(nextProgress)
+  applyChoreography(nextProgress)
+
+  // Toggle the desktop chrome from progress, with hysteresis so a scroll that
+  // parks near the threshold doesn't flicker. Scrolling back up to the landing
+  // retracts it — the first slide returns to its initial state.
+  if (!booted.value && nextProgress >= BOOT_PROGRESS_THRESHOLD) {
+    booted.value = true
+  } else if (booted.value && nextProgress < BOOT_UNBOOT_THRESHOLD) {
+    booted.value = false
+  }
 }
 
-useEventListener('scroll', updateProgressFromScroll, { passive: true })
-onMounted(() => {
-  if (isCinematic.value) updateProgressFromScroll()
-  else boot()
+const scheduleRead = () => {
+  cancelAnimationFrame(frameHandle)
+  frameHandle = requestAnimationFrame(readProgress)
+}
+
+useEventListener('scroll', scheduleRead, { passive: true })
+useEventListener('resize', scheduleRead, { passive: true })
+
+onMounted(async () => {
+  isMounted.value = true
+  await nextTick()
+
+  if (!isCinematic.value) {
+    boot()
+    return
+  }
+
+  const gsapModule = await import('gsap')
+  gsap = gsapModule.gsap
+  await nextTick()
+  readProgress()
 })
+
+onBeforeUnmount(() => cancelAnimationFrame(frameHandle))
 </script>
 
 <template>
-  <IntroFallback v-if="!isCinematic && !booted" />
-
   <div
-    v-else-if="isCinematic"
+    v-if="isCinematic"
     ref="stageEl"
-    :style="{ height: `${INTRO_STAGE_HEIGHT_VH}vh` }"
-    class="relative"
+    class="intro-stage"
+    :style="{ height: stageHeight }"
   >
-    <div class="sticky top-0 grid h-dvh place-items-center overflow-hidden">
-      <ScrubCanvas
-        v-if="frameSources.length"
-        :frame-sources="frameSources"
-        :progress="progress"
-        :active="isInViewport"
-        class="absolute inset-0"
-      />
+    <div ref="pinEl" class="intro-pin">
+      <div ref="heroEl" class="intro-photo">
+        <HeroLayer />
+        <div class="intro-scrim" aria-hidden="true" />
+      </div>
+
       <IntroCopy :progress="progress" />
+      <IntroStats :progress="progress" />
     </div>
   </div>
+
+  <IntroFallback v-else />
 </template>
+
+<style scoped>
+.intro-stage {
+  position: relative;
+}
+
+.intro-pin {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Oversized so the parallax drift never reveals an edge. */
+.intro-photo {
+  position: absolute;
+  inset: -18vh 0;
+  will-change: transform, opacity;
+}
+
+.intro-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in oklab, var(--color-glow-edge) 62%, transparent) 0%,
+    color-mix(in oklab, var(--color-glow-edge) 12%, transparent) 30%,
+    color-mix(in oklab, var(--color-glow-edge) 30%, transparent) 62%,
+    color-mix(in oklab, var(--color-glow-edge) 78%, transparent) 100%
+  );
+}
+</style>

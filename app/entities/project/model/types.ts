@@ -15,6 +15,18 @@ export interface ProjectContent {
   blocks: CaseBlock[]
 }
 
+/**
+ * The Finder preview for a project. `video` assets are derived from `slug`:
+ * `/projects/<slug>.mp4`, `/projects/<slug>.webm`, poster `/projects/<slug>.jpg`.
+ */
+export type ProjectMedia =
+  | { kind: 'video'; width: number; height: number }
+  | { kind: 'image'; src: string; width: number; height: number }
+  | { kind: 'doc' }
+
+/** Locale-neutral "what kind of thing is this" — drives the Finder's Kind row. */
+export type ProjectKindKey = 'website' | 'desktop' | 'miniapp' | 'dashboard' | 'doc'
+
 /** Locale-neutral project fields plus localized `content`. */
 export interface Project {
   slug: string
@@ -23,6 +35,8 @@ export interface Project {
   stack: string[]
   links: { repo?: string; demo?: string }
   cover?: string
+  kindKey: ProjectKindKey
+  media?: ProjectMedia
   /** Lower sorts first. */
   order: number
   featured: boolean

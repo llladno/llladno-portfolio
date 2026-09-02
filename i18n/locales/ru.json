@@ -1,25 +1,83 @@
 {
   "sections": {
     "about": "Обо мне",
-    "projects": "Проекты",
     "experience": "Опыт",
+    "projects": "Портфолио",
     "contact": "Контакты"
+  },
+  "contact": {
+    "lead": "Удобнее почтой? Напишите — отвечу на ваш адрес.",
+    "name": "Имя",
+    "email": "Почта",
+    "message": "Сообщение",
+    "send": "Отправить",
+    "sending": "Отправляю…",
+    "ok": "Спасибо — получил. Скоро свяжусь.",
+    "error": "Не удалось отправить. Попробуйте ещё раз или напишите на gregorymansurov{'@'}gmail.com.",
+    "noKey": "Форма ещё не настроена. Пока что: gregorymansurov{'@'}gmail.com"
   },
   "dock": {
     "github": "GitHub",
-    "resume": "Резюме"
+    "linkedin": "LinkedIn",
+    "telegram": "Telegram",
+    "resume": "Резюме (PDF)"
+  },
+  "about": {
+    "languages": "Языки",
+    "location": "Локация"
+  },
+  "project": {
+    "demo": "Демо",
+    "repo": "Код"
+  },
+  "resume": {
+    "title": "Резюме",
+    "download": "Скачать PDF",
+    "close": "Закрыть резюме"
+  },
+  "finder": {
+    "info": "Информация",
+    "kindLabel": "Вид",
+    "created": "Создан",
+    "role": "Роль",
+    "stack": "Стек",
+    "where": "Источник",
+    "open": "Открыть в новой вкладке",
+    "kind": {
+      "website": "Сайт",
+      "desktop": "Настольное приложение",
+      "miniapp": "Telegram Mini App",
+      "dashboard": "Веб-платформа",
+      "doc": "Документ"
+    }
   },
   "window": {
-    "close": "Закрыть окно"
+    "close": "Закрыть окно",
+    "toDesktop": "На рабочий стол",
+    "zoom": "Развернуть на весь экран",
+    "restore": "Свернуть окно к обычному размеру"
+  },
+  "desktop": {
+    "openFolder": "Открыть «{name}»",
+    "open": "Открыть",
+    "arrangeIcons": "Упорядочить значки"
+  },
+  "theme": {
+    "toDark": "Переключить на тёмную тему",
+    "toLight": "Переключить на светлую тему"
   },
   "intro": {
     "scrollHint": "Листайте вниз",
     "cta": "Смотреть работы",
-    "posterAlt": "Ноутбук с открытым сайтом-портфолио"
+    "stats": {
+      "experience": "года опыта",
+      "teams": "команды",
+      "tech": "технологий в проде"
+    }
   },
   "seo": {
     "tagline": "портфолио",
-    "description": "Личное портфолио: проекты, опыт и контакты."
+    "description": "Frontend-разработчик: опыт, проекты и контакты."
   },
   "error": {
     "notFound": "Страница не найдена",
@@ -27,7 +85,9 @@
     "home": "На главную"
   },
   "a11y": {
-    "sections": "Разделы сайта",
-    "dock": "Панель приложений"
+    "sections": "Разделы",
+    "dock": "Панель приложений",
+    "desktop": "Рабочий стол",
+    "contextMenu": "Контекстное меню рабочего стола"
   }
 }

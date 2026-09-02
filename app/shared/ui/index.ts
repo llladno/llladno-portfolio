@@ -1,3 +1,7 @@
 export { GlassPanel } from '~/shared/ui/GlassPanel'
 export type { GlassPanelProps } from '~/shared/ui/GlassPanel'
 export { TrafficLights } from '~/shared/ui/TrafficLights'
+export { SectionShell } from '~/shared/ui/SectionShell'
+export { Chip } from '~/shared/ui/Chip'
+export { ExternalLinks } from '~/shared/ui/ExternalLinks'
+export type { ExternalLink } from '~/shared/ui/ExternalLinks'

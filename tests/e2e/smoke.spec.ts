@@ -4,7 +4,7 @@ test.describe('smoke', () => {
   test('RU home renders with all sections', async ({ page }) => {
     await page.goto('/')
     await expect(page.locator('h1')).toBeVisible()
-    for (const id of ['about', 'projects', 'experience', 'contact']) {
+    for (const id of ['about', 'experience', 'projects', 'contact']) {
       await expect(page.locator(`#${id}`)).toBeAttached()
     }
   })

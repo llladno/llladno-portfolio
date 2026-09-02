@@ -23,6 +23,10 @@ export default withNuxt(
     rules: {
       'vue/multi-word-component-names': 'off',
 
+      // Self-closing style is Prettier's call (it self-closes void elements
+      // like <source>); keep the lint rule out of that overlap.
+      'vue/html-self-closing': 'off',
+
       // Arrow functions only — no `function` declarations or expressions.
       'func-style': ['error', 'expression'],
       'prefer-arrow-callback': 'error',

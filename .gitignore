@@ -35,6 +35,10 @@ Thumbs.db
 # Source assets not tracked in git (raw intro mp4, design files)
 assets-src
 
+# Raw hand-recorded project captures — `pnpm convert:previews` turns these into
+# the committed <slug>.{webm,mp4,jpg} and deletes them.
+public/projects/*.mov
+
 # Playwright
 test-results
 playwright-report

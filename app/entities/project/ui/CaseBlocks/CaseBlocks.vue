@@ -5,16 +5,33 @@ defineProps<{ blocks: CaseBlock[] }>()
 </script>
 
 <template>
-  <div class="space-y-3">
+  <div class="space-y-4">
     <template v-for="(block, index) in blocks" :key="index">
-      <h3 v-if="block.type === 'heading'" class="text-base font-semibold">
+      <h4
+        v-if="block.type === 'heading'"
+        class="text-xs font-semibold uppercase tracking-[0.15em] text-accent"
+      >
         {{ block.text }}
-      </h3>
-      <p v-else-if="block.type === 'paragraph'" class="text-sm text-muted">
+      </h4>
+      <p
+        v-else-if="block.type === 'paragraph'"
+        class="text-sm leading-relaxed text-fg/80"
+      >
         {{ block.text }}
       </p>
-      <ul v-else-if="block.type === 'list'" class="list-disc space-y-1 pl-5 text-sm">
-        <li v-for="(item, itemIndex) in block.items" :key="itemIndex">
+      <ul
+        v-else-if="block.type === 'list'"
+        class="space-y-1.5 text-sm leading-relaxed text-fg/80"
+      >
+        <li
+          v-for="(item, itemIndex) in block.items"
+          :key="itemIndex"
+          class="relative pl-4"
+        >
+          <span
+            class="absolute left-0 top-[0.5rem] size-1 rounded-full bg-faint"
+            aria-hidden="true"
+          />
           {{ item }}
         </li>
       </ul>
@@ -24,7 +41,7 @@ defineProps<{ blocks: CaseBlock[] }>()
         :alt="block.alt"
         :width="block.width"
         :height="block.height"
-        class="rounded-lg"
+        class="rounded-lg border border-line"
         loading="lazy"
       />
     </template>

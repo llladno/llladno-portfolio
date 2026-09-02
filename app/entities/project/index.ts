@@ -6,4 +6,6 @@ export type {
   LocalizedProject,
   ProjectContent,
   CaseBlock,
+  ProjectMedia,
+  ProjectKindKey,
 } from '~/entities/project/model/types'

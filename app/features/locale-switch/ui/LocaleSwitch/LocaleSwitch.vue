@@ -11,10 +11,14 @@ const switchLocalePath = useSwitchLocalePath()
 const route = useRoute()
 
 const options = computed(() =>
-  (locales.value as LocaleOption[]).map((option) => ({
-    code: option.code,
-    href: switchLocalePath(option.code) + route.hash,
-  })),
+  (locales.value as LocaleOption[]).map((option) => {
+    const path = switchLocalePath(option.code)
+    return {
+      code: option.code,
+      // `switchLocalePath` drops the hash — re-attach the current section.
+      href: path.includes('#') ? path : path + route.hash,
+    }
+  }),
 )
 </script>
 

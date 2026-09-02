@@ -2,59 +2,126 @@
 
 /*
  * Tailwind v4 — CSS-first config.
- * Design tokens for the macOS-desktop metaphor: glass surfaces, wallpaper
- * gradients, window chrome. Light values on :root, dark overrides in the
- * media block. Keep every color defined on bare :root first.
+ *
+ * Identity: "Signal" — a hot orange (#FF7A1A brand fill) keyed to the glow that
+ * boots the laptop in the intro, on a cool near-neutral ground. Dual-theme:
+ * the bare :root below is the full LIGHT palette (warm paper); dark Signal is
+ * layered on via `prefers-color-scheme` and the `[data-theme]` toggle. Style
+ * through the tokens — `text-muted`, `bg-surface`, `border-line`,
+ * `rounded-card`, `font-display` — never `[var(--…)]`.
  */
 @theme {
   --font-sans:
     'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
+  --font-mono: 'SF Mono', ui-monospace, 'JetBrains Mono', 'Roboto Mono', Menlo, monospace;
+  --font-display:
+    'Hanken Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
 
-  /* Surfaces */
-  --color-bg: oklch(0.98 0.005 250);
-  --color-fg: oklch(0.22 0.02 260);
-  --color-muted: oklch(0.55 0.02 260);
+  /* ---- LIGHT (base) — warm paper, burnt-orange accent ---- */
+  --color-bg: oklch(0.965 0.008 70);
+  --color-surface: oklch(0.995 0.004 75);
+  --color-elevated: oklch(1 0 0);
+  --color-fg: oklch(0.235 0.014 55);
+  --color-muted: oklch(0.44 0.014 55);
+  --color-faint: oklch(0.58 0.014 55);
+  --color-line: oklch(0.3 0.02 55 / 0.14);
+  --color-line-strong: oklch(0.3 0.02 55 / 0.24);
 
-  /* Glass (menu bar / dock / window) */
-  --color-glass: oklch(1 0 0 / 0.55);
-  --color-glass-border: oklch(1 0 0 / 0.35);
-  --color-glass-shadow: oklch(0.2 0.03 260 / 0.25);
+  --color-accent: oklch(0.62 0.17 45);
+  --color-accent-contrast: oklch(0.99 0.004 75);
 
-  /* Accent */
-  --color-accent: oklch(0.62 0.19 255);
+  --color-danger: oklch(0.55 0.2 25);
 
-  /* Traffic lights */
-  --color-tl-close: oklch(0.68 0.19 25);
-  --color-tl-min: oklch(0.82 0.17 90);
+  --color-glass: oklch(1 0 0 / 0.6);
+  --color-glass-strong: oklch(0.99 0.004 75 / 0.85);
+  --color-glass-border: oklch(0.3 0.02 55 / 0.12);
+  --color-glass-shadow: oklch(0.4 0.06 40 / 0.18);
+
+  --color-tl-close: oklch(0.66 0.2 25);
+  --color-tl-min: oklch(0.82 0.16 85);
   --color-tl-zoom: oklch(0.74 0.19 145);
 
-  /* Wallpaper stops */
-  --color-wall-a: oklch(0.45 0.13 265);
-  --color-wall-b: oklch(0.35 0.11 300);
-  --color-wall-c: oklch(0.55 0.12 220);
+  --color-wall-a: oklch(0.92 0.05 65);
+  --color-wall-b: oklch(0.96 0.01 75);
+  --color-wall-c: oklch(0.93 0.045 55);
+  --color-glow-core: oklch(0.9 0.06 60);
+  --color-glow-edge: oklch(0.95 0.012 75);
+  --color-wall-vignette: oklch(0.35 0.05 40 / 0.06);
 
-  --radius-window: 0.75rem;
-  --blur-glass: 20px;
+  --radius-window: 0.875rem;
+  --radius-card: 1rem;
+  --blur-glass: 24px;
 }
 
+:root {
+  color-scheme: light;
+}
+
+/* ---- DARK "Signal" — hot orange on cool graphite ---- */
 @media (prefers-color-scheme: dark) {
-  :root {
-    --color-bg: oklch(0.18 0.02 265);
-    --color-fg: oklch(0.94 0.01 260);
-    --color-muted: oklch(0.68 0.02 260);
-    --color-glass: oklch(0.25 0.03 265 / 0.55);
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+
+    --color-bg: oklch(0.17 0.006 285);
+    --color-surface: oklch(0.225 0.006 285);
+    --color-elevated: oklch(0.27 0.007 285);
+    --color-fg: oklch(0.955 0.006 75);
+    --color-muted: oklch(0.72 0.01 70);
+    --color-faint: oklch(0.55 0.01 65);
+    --color-line: oklch(1 0 0 / 0.1);
+    --color-line-strong: oklch(1 0 0 / 0.18);
+
+    --color-accent: oklch(0.74 0.185 47);
+    --color-accent-contrast: oklch(0.19 0.05 45);
+
+    --color-danger: oklch(0.7 0.19 25);
+
+    --color-glass: oklch(0.24 0.007 285 / 0.6);
+    --color-glass-strong: oklch(0.175 0.006 285 / 0.92);
     --color-glass-border: oklch(1 0 0 / 0.12);
-    --color-glass-shadow: oklch(0 0 0 / 0.45);
-    --color-accent: oklch(0.7 0.16 255);
-    --color-wall-a: oklch(0.28 0.11 265);
-    --color-wall-b: oklch(0.2 0.09 300);
-    --color-wall-c: oklch(0.32 0.1 220);
+    --color-glass-shadow: oklch(0 0 0 / 0.55);
+
+    --color-wall-a: oklch(0.55 0.13 48);
+    --color-wall-b: oklch(0.16 0.014 40);
+    --color-wall-c: oklch(0.34 0.12 40);
+    --color-glow-core: oklch(0.72 0.16 55);
+    --color-glow-edge: oklch(0.13 0.008 285);
+    --color-wall-vignette: oklch(0 0 0 / 0.5);
   }
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --color-bg: oklch(0.17 0.006 285);
+  --color-surface: oklch(0.225 0.006 285);
+  --color-elevated: oklch(0.27 0.007 285);
+  --color-fg: oklch(0.955 0.006 75);
+  --color-muted: oklch(0.72 0.01 70);
+  --color-faint: oklch(0.55 0.01 65);
+  --color-line: oklch(1 0 0 / 0.1);
+  --color-line-strong: oklch(1 0 0 / 0.18);
+
+  --color-accent: oklch(0.74 0.185 47);
+  --color-accent-contrast: oklch(0.19 0.05 45);
+
+  --color-danger: oklch(0.7 0.19 25);
+
+  --color-glass: oklch(0.24 0.007 285 / 0.6);
+  --color-glass-strong: oklch(0.175 0.006 285 / 0.92);
+  --color-glass-border: oklch(1 0 0 / 0.12);
+  --color-glass-shadow: oklch(0 0 0 / 0.55);
+
+  --color-wall-a: oklch(0.55 0.13 48);
+  --color-wall-b: oklch(0.16 0.014 40);
+  --color-wall-c: oklch(0.34 0.12 40);
+  --color-glow-core: oklch(0.72 0.16 55);
+  --color-glow-edge: oklch(0.13 0.008 285);
+  --color-wall-vignette: oklch(0 0 0 / 0.5);
 }
 
 @layer base {
   html {
-    color-scheme: light dark;
     scroll-behavior: smooth;
   }
 
@@ -69,19 +136,58 @@
     color: var(--color-fg);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--color-accent) 35%, transparent);
   }
 
   :focus-visible {
     outline: 2px solid var(--color-accent);
     outline-offset: 2px;
+    border-radius: 3px;
   }
 }
 
-/* Reusable glass surface. */
+/* Lenis momentum scrolling — no-ops under reduced motion (plugin skips init). */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: clip;
+}
+
+/*
+ * The desktop wallpaper fill — a cool ground with a warm bloom from above,
+ * seamless with the hero photo's scrim. Shared by <Wallpaper> and the intro
+ * stage's cross-fade layer. Reads warm-paper in light, graphite in dark.
+ */
+@utility wallpaper-surface {
+  background:
+    radial-gradient(120% 80% at 50% -8%, var(--color-wall-a), transparent 55%),
+    radial-gradient(75% 70% at 88% 112%, var(--color-wall-c), transparent 55%),
+    linear-gradient(170deg, var(--color-wall-b), var(--color-glow-edge) 78%);
+}
+
+/* Reusable glass surface (menu bar / Dock / window chrome). */
 @utility glass {
   background-color: var(--color-glass);
   border: 1px solid var(--color-glass-border);
-  backdrop-filter: blur(var(--blur-glass)) saturate(1.6);
-  -webkit-backdrop-filter: blur(var(--blur-glass)) saturate(1.6);
-  box-shadow: 0 8px 32px -8px var(--color-glass-shadow);
+  backdrop-filter: blur(var(--blur-glass)) saturate(1.7);
+  -webkit-backdrop-filter: blur(var(--blur-glass)) saturate(1.7);
+  box-shadow:
+    inset 0 1px 0 0 oklch(1 0 0 / 0.06),
+    0 16px 50px -12px var(--color-glass-shadow);
+}
+
+/* A quiet card surface for content (sections, project cards). */
+@utility card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
 }

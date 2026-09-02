@@ -1,25 +1,83 @@
 {
   "sections": {
     "about": "About",
-    "projects": "Projects",
     "experience": "Experience",
+    "projects": "Portfolio",
     "contact": "Contact"
+  },
+  "contact": {
+    "lead": "Prefer email? Send me a message and I'll reply to your address.",
+    "name": "Name",
+    "email": "Email",
+    "message": "Message",
+    "send": "Send",
+    "sending": "Sending…",
+    "ok": "Thanks — got it. I'll be in touch.",
+    "error": "Couldn't send. Try again, or email gregorymansurov{'@'}gmail.com.",
+    "noKey": "The contact form isn't configured yet. Meanwhile: gregorymansurov{'@'}gmail.com"
   },
   "dock": {
     "github": "GitHub",
-    "resume": "Résumé"
+    "linkedin": "LinkedIn",
+    "telegram": "Telegram",
+    "resume": "Résumé (PDF)"
+  },
+  "about": {
+    "languages": "Languages",
+    "location": "Location"
+  },
+  "project": {
+    "demo": "Demo",
+    "repo": "Code"
+  },
+  "resume": {
+    "title": "Résumé",
+    "download": "Download PDF",
+    "close": "Close résumé"
+  },
+  "finder": {
+    "info": "Get Info",
+    "kindLabel": "Kind",
+    "created": "Created",
+    "role": "Role",
+    "stack": "Stack",
+    "where": "Where",
+    "open": "Open in a new tab",
+    "kind": {
+      "website": "Website",
+      "desktop": "Desktop app",
+      "miniapp": "Telegram Mini App",
+      "dashboard": "Web platform",
+      "doc": "Document"
+    }
   },
   "window": {
-    "close": "Close window"
+    "close": "Close window",
+    "toDesktop": "Back to desktop",
+    "zoom": "Zoom to full screen",
+    "restore": "Restore window size"
+  },
+  "desktop": {
+    "openFolder": "Open “{name}”",
+    "open": "Open",
+    "arrangeIcons": "Clean Up Icons"
+  },
+  "theme": {
+    "toDark": "Switch to dark theme",
+    "toLight": "Switch to light theme"
   },
   "intro": {
     "scrollHint": "Scroll down",
     "cta": "See my work",
-    "posterAlt": "A laptop showing the portfolio site"
+    "stats": {
+      "experience": "years of experience",
+      "teams": "teams",
+      "tech": "technologies in production"
+    }
   },
   "seo": {
     "tagline": "portfolio",
-    "description": "Personal portfolio: projects, experience and contacts."
+    "description": "Frontend developer: experience, projects and contacts."
   },
   "error": {
     "notFound": "Page not found",
@@ -27,7 +85,9 @@
     "home": "Go home"
   },
   "a11y": {
-    "sections": "Site sections",
-    "dock": "Application dock"
+    "sections": "Sections",
+    "dock": "Application dock",
+    "desktop": "Desktop",
+    "contextMenu": "Desktop context menu"
   }
 }

@@ -20,7 +20,10 @@ const goHome = () => {
           error.statusCode === NOT_FOUND_STATUS ? t('error.notFound') : t('error.generic')
         }}
       </p>
-      <button class="mt-6 rounded-full bg-accent px-5 py-2 text-white" @click="goHome">
+      <button
+        class="mt-6 rounded-full bg-accent px-5 py-2 font-medium text-accent-contrast"
+        @click="goHome"
+      >
         {{ t('error.home') }}
       </button>
     </div>

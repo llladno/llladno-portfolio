@@ -1,4 +1,8 @@
 export { clamp } from '~/shared/lib/clamp'
+export { easeOutCubic } from '~/shared/lib/ease-out-cubic'
+export { useDeckState } from '~/shared/lib/use-deck-state'
 export { useDesktopMode } from '~/shared/lib/use-desktop-mode'
+export { useIdentity } from '~/shared/lib/use-identity'
 export { useIntroState } from '~/shared/lib/use-intro-state'
 export { useSeoI18n } from '~/shared/lib/use-seo-i18n'
+export { useTheme, type Theme } from '~/shared/lib/use-theme'

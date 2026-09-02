@@ -1,12 +1,20 @@
 export interface TrafficLight {
-  id: 'close' | 'minimize' | 'zoom'
+  id: 'close' | 'zoom'
   colorVar: string
-  /** Only the close button is interactive in v1. */
-  interactive: boolean
+  /** Glyph shown on hover of the cluster (macOS detail). */
+  glyph: string
 }
 
+/** Red closes, green zooms to full screen. (Minimize is not part of this OS.) */
 export const TRAFFIC_LIGHTS: readonly TrafficLight[] = [
-  { id: 'close', colorVar: 'var(--color-tl-close)', interactive: true },
-  { id: 'minimize', colorVar: 'var(--color-tl-min)', interactive: false },
-  { id: 'zoom', colorVar: 'var(--color-tl-zoom)', interactive: false },
+  {
+    id: 'close',
+    colorVar: 'var(--color-tl-close)',
+    glyph: '×',
+  },
+  {
+    id: 'zoom',
+    colorVar: 'var(--color-tl-zoom)',
+    glyph: '⤢',
+  },
 ]

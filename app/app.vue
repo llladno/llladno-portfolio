@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import { useIdentity } from '~/shared/lib'
+
 const appConfig = useAppConfig()
-const { locale } = useI18n()
+const { name, role, email } = useIdentity()
 const siteUrl = useSiteConfig().url
 
 // Localized <html lang>, canonical and hreflang alternates from @nuxtjs/i18n.
@@ -19,11 +21,9 @@ useHead({
       innerHTML: JSON.stringify({
         '@context': 'https://schema.org',
         '@type': 'Person',
-        name: appConfig.identity.name,
-        jobTitle:
-          appConfig.identity.role[locale.value as 'ru' | 'en'] ??
-          appConfig.identity.role.en,
-        email: `mailto:${appConfig.identity.email}`,
+        name: name.value,
+        jobTitle: role.value,
+        email: `mailto:${email}`,
         url: siteUrl,
         sameAs: appConfig.socials.map((social) => social.href),
       }),

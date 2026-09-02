@@ -1,0 +1,11 @@
+{
+  // The portfolio ships as a Cloudflare Worker with Static Assets only — no
+  // server code, just the prerendered site. `pnpm generate` produces
+  // ./.output/public; the `_headers` file inside it is honoured by Static Assets.
+  "name": "grigory",
+  "compatibility_date": "2026-09-02",
+  "assets": {
+    "directory": "./.output/public",
+    "not_found_handling": "404-page"
+  }
+}
